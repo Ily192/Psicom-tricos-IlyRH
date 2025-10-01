@@ -69,9 +69,28 @@
         <!-- Contenedor Principal del Formulario -->
         <form id="psychometric-test-form">
             
-            <!-- SECCIÓN 1: Estilo de Comportamiento (DISC Simplificado) -->
+            <!-- NUEVA SECCIÓN 1: Datos de Contacto (4 Pasos en total) -->
             <section id="section-1" class="test-section active">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">1/3. Estilo de Comportamiento (Personalidad y Enfoque)</h2>
+                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">1/4. Datos de Contacto</h2>
+                <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
+                    Necesitamos tu nombre y correo electrónico para poder enviarte un *feedback* detallado de tu perfil de competencias.
+                </p>
+
+                <div class="mb-6">
+                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                    <input type="text" id="user-name" name="user-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-brand-accent focus:border-brand-accent" placeholder="Tu nombre completo">
+                </div>
+
+                <div class="mb-6">
+                    <label for="user-email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                    <input type="email" id="user-email" name="user-email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-brand-accent focus:border-brand-accent" placeholder="ejemplo@correo.com">
+                </div>
+            </section>
+
+            
+            <!-- SECCIÓN 2 (Anteriormente 1): Estilo de Comportamiento (DISC Simplificado) -->
+            <section id="section-2" class="test-section">
+                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">2/4. Estilo de Comportamiento (Personalidad y Enfoque)</h2>
                 <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
                     Instrucciones: En cada grupo de cuatro frases, selecciona dos opciones: la que **MEJOR** te describe y la que **MENOS** te describe.
                 </p>
@@ -131,9 +150,9 @@
 
             </section>
             
-            <!-- SECCIÓN 2: Juicio Situacional (SJT) -->
-            <section id="section-2" class="test-section">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">2/3. Razonamiento Situacional (Determinación y Mejora Continua)</h2>
+            <!-- SECCIÓN 3 (Anteriormente 2): Juicio Situacional (SJT) -->
+            <section id="section-3" class="test-section">
+                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">3/4. Razonamiento Situacional (Determinación y Mejora Continua)</h2>
                 <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
                     Instrucciones: Evalúa qué tan probable es que realices cada acción en las situaciones presentadas (1: Muy improbable, 5: Muy probable).
                 </p>
@@ -194,9 +213,9 @@
 
             </section>
 
-            <!-- SECCIÓN 3: Capacidad Lógica (Aptitud) -->
-            <section id="section-3" class="test-section">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">3/3. Capacidad Lógica (Análisis y Aptitud)</h2>
+            <!-- SECCIÓN 4 (Anteriormente 3): Capacidad Lógica (Aptitud) -->
+            <section id="section-4" class="test-section">
+                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">4/4. Capacidad Lógica (Análisis y Aptitud)</h2>
                 <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
                     Instrucciones: Selecciona la opción correcta.
                 </p>
@@ -240,8 +259,8 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 4: Mensaje de Carga y Resultados -->
-            <section id="section-4" class="test-section text-center">
+            <!-- SECCIÓN 5 (Anteriormente 4): Mensaje de Carga y Resultados -->
+            <section id="section-5" class="test-section text-center">
                 <div id="loading-indicator" class="hidden">
                     <div class="flex items-center justify-center p-8">
                         <svg class="animate-spin h-8 w-8 text-brand-primary mr-3" viewBox="0 0 24 24">
@@ -297,12 +316,12 @@
     <script>
         // === CONFIGURACIÓN ===
         // !!! DEBE REEMPLAZAR ESTA URL CON LA QUE OBTIENE DEL DESPLIEGUE DE GOOGLE APPS SCRIPT !!!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyn3LDCWiOrpCta7ZF9Za3RlVcS68xUFJ_z_k-8VQ0wVs1mSyrCjkSQFPRPngWztTZc/exec'; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS-1wyI54Mqw6sYw6YPqHPnsb3R4SzuohxcK5uSIlTKFo1dwkw66Nu5OC0QRsUdGMe/exec'; 
         // Generador de ID único temporal (para el registro en la hoja de cálculo)
         const generateUniqueId = () => 'user_' + Math.random().toString(36).substring(2, 9) + Date.now();
         
         let currentSection = 1;
-        const totalSections = 3; 
+        const totalSections = 4; // Secciones de contenido: Datos, DISC, SJT, Lógica
         const sections = document.querySelectorAll('.test-section');
 
         const form = document.getElementById('psychometric-test-form');
@@ -326,8 +345,11 @@
             }
             
             // Lógica de botones
+            // 'Anterior' se oculta en la primera sección de contenido (Sección 1) y en la pantalla final.
             prevBtn.classList.toggle('hidden', sectionIndex === 1 || sectionIndex > totalSections);
+            // 'Siguiente' se oculta en la última sección de contenido (Sección 4) y en la pantalla final.
             nextBtn.classList.toggle('hidden', sectionIndex === totalSections || sectionIndex > totalSections);
+            // 'Finalizar Test' solo se muestra en la última sección de contenido (Sección 4).
             submitBtn.classList.toggle('hidden', sectionIndex !== totalSections);
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -336,10 +358,19 @@
         /** Valida que todas las preguntas de la sección actual estén respondidas. */
         function validateSection(sectionIndex) {
             const section = document.getElementById(`section-${sectionIndex}`);
-            const requiredInputs = section.querySelectorAll('input[type="radio"][required]');
             
-            // Para la Sección 1 (DISC) validamos grupos "mejor" y "menos"
+            // Validación específica para la Sección 1 (Datos de Contacto)
             if (sectionIndex === 1) {
+                const nameInput = document.getElementById('user-name');
+                const emailInput = document.getElementById('user-email');
+                if (!nameInput.value.trim() || !emailInput.value.trim()) {
+                    return false;
+                }
+                return true;
+            }
+
+            // Validación específica para la Sección 2 (DISC)
+            if (sectionIndex === 2) {
                 const mejorGroups = ['b1-mejor', 'b2-mejor'];
                 const menosGroups = ['b1-menos', 'b2-menos'];
 
@@ -356,7 +387,8 @@
                 return true;
             }
 
-            // Para las Secciones 2 y 3, validamos por grupos de name.
+            // Validación general para Secciones 3 y 4 (SJT y Lógica)
+            const requiredInputs = section.querySelectorAll('input[type="radio"][required]');
             const uniqueNames = new Set();
             requiredInputs.forEach(input => uniqueNames.add(input.name));
 
@@ -405,14 +437,19 @@
             }, 3000);
         }
 
-        /** Calcula todos los puntajes del test. */
+        /** Calcula todos los puntajes del test y recoge datos del usuario. */
         function calculateScores() {
             let scoreD = 0; // Determinación / Orientación a Resultados
             let scoreC = 0; // Atención al Detalle / Excelencia
             let scoreSJT = 0; // Mejora Continua / Determinación Situacional
             let scoreLogic = 0; // Aptitud Lógica
 
-            // I. SECCIÓN DISC SIMPLIFICADO (D vs C)
+            // Datos del Usuario
+            const userName = document.getElementById('user-name').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+
+
+            // II. SECCIÓN DISC SIMPLIFICADO (D vs C)
             // Lógica: Mejor (+1) / Menos (-1).
             const betterChoices = form.querySelectorAll('input[name$="-mejor"]:checked');
             const lesserChoices = form.querySelectorAll('input[name$="-menos"]:checked');
@@ -427,13 +464,13 @@
                 if (input.value === 'C') scoreC--;
             });
 
-            // II. SECCIÓN JUICIO SITUACIONAL (SJT)
+            // III. SECCIÓN JUICIO SITUACIONAL (SJT)
             // Mide Mejora Continua (sjt1) y Determinación Situacional (sjt2).
             const sjt1Value = parseInt(form.querySelector('input[name="sjt1"]:checked')?.value || 0);
             const sjt2Value = parseInt(form.querySelector('input[name="sjt2"]:checked')?.value || 0);
             scoreSJT = sjt1Value + sjt2Value; // Puntaje total SJT
 
-            // III. SECCIÓN CAPACIDAD LÓGICA
+            // IV. SECCIÓN CAPACIDAD LÓGICA
             // Respuestas correctas: logic1 = b (243), logic2 = c (Edificio)
             if (form.querySelector('input[name="logic1"]:checked')?.value === 'b') scoreLogic++;
             if (form.querySelector('input[name="logic2"]:checked')?.value === 'c') scoreLogic++;
@@ -448,7 +485,7 @@
                 dominantProfile = 'Balance D/C';
             }
             
-            return { scoreD, scoreC, scoreSJT, scoreLogic, dominantProfile };
+            return { userName, userEmail, scoreD, scoreC, scoreSJT, scoreLogic, dominantProfile };
         }
 
         /** Envía los datos al Google Apps Script (el "backend"). */
@@ -459,6 +496,8 @@
             // Payload para el Apps Script
             const payload = {
                 userId: userId,
+                userName: results.userName,
+                userEmail: results.userEmail,
                 scoreD: results.scoreD,
                 scoreC: results.scoreC,
                 scoreSJT: results.scoreSJT,
@@ -529,4 +568,3 @@
     </script>
 </body>
 </html>
-
