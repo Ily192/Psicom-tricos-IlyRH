@@ -1,570 +1,527 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Competencias Tech - Ilyra Rivas</title>
-    <!-- Carga de Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuración de Colores de Marca (Navy Blue: #0F3460, Accent Blue: #3B82F6) -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-primary': '#0F3460', // Navy Blue
-                        'brand-secondary': '#A9B2C3', // Silver/Gray
-                        'brand-accent': '#3B82F6', // Accent Blue
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Estilos base y fuente */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        
-        /* Estilo para el input de respuesta forzada */
-        .forced-choice-group input[type="radio"]:checked + label {
-            border-color: #3B82F6;
-            background-color: #EBF5FF; /* Light blue background */
-            font-weight: 600;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Evaluación de Competencias | Ilyra Rivas HRBP Tech</title>
 
-        /* Estilo para el botón de navegación */
-        .nav-btn {
-            transition: all 0.3s ease;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Tu paleta de colores personalizada
+            'brand-cyan': '#37a199',
+            'brand-indigo': '#3e27b7',
+            'brand-bg': '#ede0d4',     // Naranja claro
+            'brand-tan': '#ddb892',    // Naranja pastel
+            'brand-dark': '#1e1b4b',   // Un índigo muy oscuro para textos de lectura
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(62, 39, 183, 0.15)', // Sombra suave con tono índigo
+          }
         }
-        .nav-btn:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-            transform: translateY(-1px);
-        }
-        
-        /* Ocultar las secciones del test por defecto */
-        .test-section {
-            display: none;
-        }
-        
-        /* Estilo para el contenedor de resultados para evitar CLS */
-        #results-container {
-            min-height: 400px;
-        }
-    </style>
+      }
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    
+    /* Transiciones suaves entre secciones */
+    .test-section { 
+        display: none; 
+        opacity: 0;
+        transition: opacity 0.4s ease-in-out;
+    }
+    .test-section.active { 
+        display: block; 
+        opacity: 1;
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-btn { transition: all .2s ease; }
+    
+    /* Estilos para radios personalizados */
+    .option-card:hover { border-color: #37a199; background-color: #f0fdfa; }
+    .peer:checked + .option-card {
+        border-color: #3e27b7;
+        background-color: #eef2ff;
+        box-shadow: 0 0 0 2px #3e27b7;
+    }
+    /* Estilos para Likert circulos */
+    .likert-circle { transition: all 0.2s; }
+    .peer:checked + .likert-circle {
+        background-color: #3e27b7;
+        color: white;
+        border-color: #3e27b7;
+        transform: scale(1.1);
+    }
+  </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4 md:p-8">
+<body class="bg-brand-bg min-h-screen flex items-center justify-center p-4 md:p-8">
 
-    <main class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 md:p-10 border-t-4 border-brand-accent">
+  <main class="w-full max-w-4xl bg-white rounded-2xl shadow-soft p-6 md:p-12 border-t-8 border-brand-indigo relative overflow-hidden">
+    
+    <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-brand-tan rounded-full opacity-20 blur-2xl"></div>
+    <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-brand-cyan rounded-full opacity-20 blur-2xl"></div>
+
+    <header class="text-center mb-10 relative z-10">
+      <div class="flex flex-col items-center justify-center mb-4">
         
-        <!-- Header / Logo -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-brand-primary mb-2">Evaluación de Competencias Tech</h1>
-            <p class="text-brand-secondary text-lg">Por Ilyra Rivas - HRBP Tech</p>
-            <div class="h-1 w-20 bg-brand-accent mx-auto mt-4 rounded-full"></div>
-        </header>
+        <div class="mb-4 p-2 rounded-lg border-2 border-dashed border-brand-tan bg-gray-50 flex items-center justify-center w-48 h-16">
+            <img src="https://github.com/Ily192/Psicom-tricos-IlyRH/edit/main/Logo%20MP%2024nov25.png" alt="Logo Marca Personal" class="h-10 object-contain opacity-80" />
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-brand-indigo tracking-tight">Evaluación de Talento</h1>
+      </div>
+      <p class="text-gray-600 text-lg font-light">Análisis de Competencias y habilidades blandas</p>
+      <div class="h-1.5 w-24 bg-brand-cyan mx-auto mt-6 rounded-full"></div>
+    </header>
 
-        <!-- Contenedor Principal del Formulario -->
-        <form id="psychometric-test-form">
-            
-            <!-- NUEVA SECCIÓN 1: Datos de Contacto (4 Pasos en total) -->
-            <section id="section-1" class="test-section active">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">1/4. Datos de Contacto</h2>
-                <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
-                    Necesitamos tu nombre y correo electrónico para poder enviarte un *feedback* detallado de tu perfil de competencias.
-                </p>
+    <form id="psychometric-test-form" class="space-y-8 relative z-10">
+      
+      <div id="timer" class="hidden sticky top-0 bg-white/95 backdrop-blur py-2 z-20 border-b border-gray-100">
+        <div class="flex items-center justify-between text-sm text-brand-indigo font-bold mb-1">
+          <span>Tiempo restante</span>
+          <span id="timer-text" class="bg-brand-indigo text-white px-2 py-0.5 rounded">0:00</span>
+        </div>
+        <div class="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+          <div id="timer-bar" class="h-full bg-brand-cyan rounded-full transition-all duration-1000 ease-linear" style="width:0%"></div>
+        </div>
+      </div>
 
-                <div class="mb-6">
-                    <label for="user-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                    <input type="text" id="user-name" name="user-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-brand-accent focus:border-brand-accent" placeholder="Tu nombre completo">
-                </div>
+      <section id="section-1" class="test-section active">
+        <div class="flex items-center mb-8">
+            <div class="w-10 h-10 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-lg mr-4">1</div>
+            <h2 class="text-2xl font-bold text-brand-dark">Información Personal</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="group">
+            <label class="block text-sm font-semibold text-brand-indigo mb-2">Nombre completo</label>
+            <input name="nombre" required class="w-full border-2 border-brand-tan rounded-xl p-3 focus:outline-none focus:border-brand-indigo focus:ring-4 focus:ring-brand-indigo/10 transition-all bg-gray-50 focus:bg-white" placeholder="Ej. Juan Pérez"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-brand-indigo mb-2">Correo electrónico</label>
+            <input type="email" name="correo" required class="w-full border-2 border-brand-tan rounded-xl p-3 focus:outline-none focus:border-brand-indigo focus:ring-4 focus:ring-brand-indigo/10 transition-all bg-gray-50 focus:bg-white" placeholder="ejemplo@correo.com"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-brand-indigo mb-2">Teléfono</label>
+            <input name="telefono" class="w-full border-2 border-brand-tan rounded-xl p-3 focus:outline-none focus:border-brand-indigo focus:ring-4 focus:ring-brand-indigo/10 transition-all bg-gray-50 focus:bg-white" placeholder="+58 412 1234567"/>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-brand-indigo mb-2">Vacante a la que postulas</label>
+            <input name="vacante" class="w-full border-2 border-brand-tan rounded-xl p-3 focus:outline-none focus:border-brand-indigo focus:ring-4 focus:ring-brand-indigo/10 transition-all bg-gray-50 focus:bg-white" placeholder="Ej. Desarrollador Backend"/>
+          </div>
+        </div>
+      </section>
 
-                <div class="mb-6">
-                    <label for="user-email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                    <input type="email" id="user-email" name="user-email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-brand-accent focus:border-brand-accent" placeholder="ejemplo@correo.com">
-                </div>
-            </section>
-
-            
-            <!-- SECCIÓN 2 (Anteriormente 1): Estilo de Comportamiento (DISC Simplificado) -->
-            <section id="section-2" class="test-section">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">2/4. Estilo de Comportamiento (Personalidad y Enfoque)</h2>
-                <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
-                    Instrucciones: En cada grupo de cuatro frases, selecciona dos opciones: la que **MEJOR** te describe y la que **MENOS** te describe.
-                </p>
-
-                <!-- Bloque 1: D vs C -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm forced-choice-group">
-                    <p class="font-medium mb-4 text-gray-700">1. Al enfrentar un nuevo proyecto:</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        
-                        <!-- D (Resultados) -->
-                        <div>
-                            <input type="radio" id="b1-mejor-d" name="b1-mejor" value="D" class="hidden">
-                            <label for="b1-mejor-d" class="block p-3 border rounded-lg cursor-pointer text-sm">Mejor: Lograr el objetivo es mi prioridad.</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="b1-menos-d" name="b1-menos" value="D" class="hidden">
-                            <label for="b1-menos-d" class="block p-3 border rounded-lg cursor-pointer text-sm">Menos: Lograr el objetivo es mi prioridad.</label>
-                        </div>
-
-                        <!-- C (Detalle) -->
-                        <div>
-                            <input type="radio" id="b1-mejor-c" name="b1-mejor" value="C" class="hidden">
-                            <label for="b1-mejor-c" class="block p-3 border rounded-lg cursor-pointer text-sm">Mejor: La precisión y la calidad son claves para el éxito.</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="b1-menos-c" name="b1-menos" value="C" class="hidden">
-                            <label for="b1-menos-c" class="block p-3 border rounded-lg cursor-pointer text-sm">Menos: La precisión y la calidad son claves para el éxito.</label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bloque 2: D vs C -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm forced-choice-group">
-                    <p class="font-medium mb-4 text-gray-700">2. Cuando mi trabajo es criticado:</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- D (Resultados) -->
-                        <div>
-                            <input type="radio" id="b2-mejor-d" name="b2-mejor" value="D" class="hidden">
-                            <label for="b2-mejor-d" class="block p-3 border rounded-lg cursor-pointer text-sm">Mejor: Me enfoco en resolver el problema y seguir avanzando.</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="b2-menos-d" name="b2-menos" value="D" class="hidden">
-                            <label for="b2-menos-d" class="block p-3 border rounded-lg cursor-pointer text-sm">Menos: Me enfoco en resolver el problema y seguir avanzando.</label>
-                        </div>
-
-                        <!-- C (Detalle) -->
-                        <div>
-                            <input type="radio" id="b2-mejor-c" name="b2-mejor" value="C" class="hidden">
-                            <label for="b2-mejor-c" class="block p-3 border rounded-lg cursor-pointer text-sm">Mejor: Analizo la crítica como una oportunidad de mejorar mi metodología.</label>
-                        </div>
-                        <div>
-                            <input type="radio" id="b2-menos-c" name="b2-menos" value="C" class="hidden">
-                            <label for="b2-menos-c" class="block p-3 border rounded-lg cursor-pointer text-sm">Menos: Analizo la crítica como una oportunidad de mejorar mi metodología.</label>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-            
-            <!-- SECCIÓN 3 (Anteriormente 2): Juicio Situacional (SJT) -->
-            <section id="section-3" class="test-section">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">3/4. Razonamiento Situacional (Determinación y Mejora Continua)</h2>
-                <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
-                    Instrucciones: Evalúa qué tan probable es que realices cada acción en las situaciones presentadas (1: Muy improbable, 5: Muy probable).
-                </p>
-
-                <!-- Escenario 1: Mejora Continua -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm">
-                    <p class="font-medium mb-4 text-gray-700">1. Has entregado un código funcional, pero un revisor te indica que no sigue el nuevo estándar de nomenclatura de la empresa. La fecha límite de entrega ya pasó.</p>
-                    <p class="text-sm italic text-gray-500 mb-3">Acción: Corregiría el código de inmediato, y programaría un recordatorio para revisar y modificar la guía de estilo si es necesario.</p>
-                    <div class="flex justify-between items-center space-x-2 text-sm">
-                        <span>1 (Improbable)</span>
-                        <div class="flex space-x-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt1" value="1" required class="form-radio h-4 w-4 text-brand-accent"> 1
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt1" value="2" class="form-radio h-4 w-4 text-brand-accent"> 2
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt1" value="3" class="form-radio h-4 w-4 text-brand-accent"> 3
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt1" value="4" class="form-radio h-4 w-4 text-brand-accent"> 4
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt1" value="5" class="form-radio h-4 w-4 text-brand-accent"> 5
-                            </label>
-                        </div>
-                        <span>5 (Muy Probable)</span>
-                    </div>
-                </div>
-
-                <!-- Escenario 2: Determinación y Resultados -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm">
-                    <p class="font-medium mb-4 text-gray-700">2. Estás a pocas horas de la entrega de un módulo crítico y descubres un *bug* complejo que no habías previsto. El equipo ya está agotado.</p>
-                    <p class="text-sm italic text-gray-500 mb-3">Acción: Notificaría inmediatamente el riesgo, propondría un plan de acción para trabajar horas extras si es necesario y tomaría el liderazgo para coordinar la solución.</p>
-                    <div class="flex justify-between items-center space-x-2 text-sm">
-                        <span>1 (Improbable)</span>
-                        <div class="flex space-x-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt2" value="1" required class="form-radio h-4 w-4 text-brand-accent"> 1
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt2" value="2" class="form-radio h-4 w-4 text-brand-accent"> 2
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt2" value="3" class="form-radio h-4 w-4 text-brand-accent"> 3
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt2" value="4" class="form-radio h-4 w-4 text-brand-accent"> 4
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="sjt2" value="5" class="form-radio h-4 w-4 text-brand-accent"> 5
-                            </label>
-                        </div>
-                        <span>5 (Muy Probable)</span>
-                    </div>
-                </div>
-
-            </section>
-
-            <!-- SECCIÓN 4 (Anteriormente 3): Capacidad Lógica (Aptitud) -->
-            <section id="section-4" class="test-section">
-                <h2 class="text-xl font-semibold mb-6 text-brand-primary border-b pb-2">4/4. Capacidad Lógica (Análisis y Aptitud)</h2>
-                <p class="text-sm text-gray-600 mb-6 bg-blue-50 p-3 rounded-lg border-l-4 border-brand-accent">
-                    Instrucciones: Selecciona la opción correcta.
-                </p>
-
-                <!-- Lógica 1: Secuencia Numérica -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm">
-                    <p class="font-medium mb-4 text-gray-700">1. ¿Qué número sigue en la secuencia: 3, 9, 27, 81, ?</p>
-                    <div class="flex flex-col space-y-2 text-sm">
-                        <label class="flex items-center">
-                            <input type="radio" name="logic1" value="a" required class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">162</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="logic1" value="b" class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">243</span> <!-- Correct Answer -->
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="logic1" value="c" class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">180</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Lógica 2: Razonamiento Abstracto -->
-                <div class="mb-8 p-4 border rounded-lg shadow-sm">
-                    <p class="font-medium mb-4 text-gray-700">2. Si "Código" es a "Sistema" como "Ladrillo" es a:</p>
-                    <div class="flex flex-col space-y-2 text-sm">
-                        <label class="flex items-center">
-                            <input type="radio" name="logic2" value="a" class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">Cemento</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="logic2" value="b" class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">Ingeniero</span>
-                        </label>
-                        <label type="radio" class="flex items-center">
-                            <input type="radio" name="logic2" value="c" required class="form-radio h-4 w-4 text-brand-accent">
-                            <span class="ml-3">Edificio</span> <!-- Correct Answer -->
-                        </label>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- SECCIÓN 5 (Anteriormente 4): Mensaje de Carga y Resultados -->
-            <section id="section-5" class="test-section text-center">
-                <div id="loading-indicator" class="hidden">
-                    <div class="flex items-center justify-center p-8">
-                        <svg class="animate-spin h-8 w-8 text-brand-primary mr-3" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span class="text-lg text-brand-primary font-medium">Calculando y guardando resultados...</span>
-                    </div>
-                    <p class="text-sm text-gray-500">Esto puede tomar unos segundos.</p>
-                </div>
-
-                <div id="results-container" class="mt-4 p-6 bg-brand-primary text-white rounded-lg hidden">
-                    <h2 class="text-2xl font-bold mb-4">¡Gracias por completar la Evaluación!</h2>
-                    <p class="mb-6">Hemos analizado y guardado tu perfil. Aquí tienes un resumen preliminar de tus tendencias:</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                        <div class="bg-white p-4 rounded-lg text-brand-primary shadow-md">
-                            <h3 class="font-bold text-xl mb-1">Tu Perfil Dominante</h3>
-                            <p id="result-dominant-profile" class="text-2xl font-extrabold text-brand-accent"></p>
-                            <p class="text-sm mt-2">Tendencia de comportamiento que más influyó en tus decisiones.</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg text-brand-primary shadow-md">
-                            <h3 class="font-bold text-xl mb-1">Habilidad Analítica</h3>
-                            <p id="result-logic" class="text-2xl font-extrabold text-brand-accent"></p>
-                            <p class="text-sm mt-2">Puntuación de razonamiento lógico y abstracto.</p>
-                        </div>
-                    </div>
-                    
-                    <p class="text-sm mt-6 text-gray-300">Pronto recibirás un *feedback* más detallado. ¡Gracias por participar!</p>
-                </div>
-                
-                <div id="error-message" class="mt-4 p-4 bg-red-100 text-red-700 border-l-4 border-red-500 rounded-lg hidden text-left">
-                    Hubo un error al intentar guardar los datos. Por favor, revisa la configuración del Apps Script.
-                </div>
-            </section>
-
-            <!-- Controles de Navegación -->
-            <div id="navigation-controls" class="flex justify-between mt-8 pt-6 border-t">
-                <button type="button" id="prev-btn" class="nav-btn bg-gray-200 text-gray-700 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 hidden">
-                    Anterior
-                </button>
-                <button type="button" id="next-btn" class="nav-btn bg-brand-primary text-white py-2 px-6 rounded-lg font-semibold hover:bg-brand-accent ml-auto">
-                    Siguiente
-                </button>
-                <button type="button" id="submit-btn" class="nav-btn bg-green-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-700 hidden ml-auto">
-                    Finalizar Test
-                </button>
+      <section id="section-2" class="test-section">
+        <div class="flex items-center mb-8">
+            <div class="w-10 h-10 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-lg mr-4">2</div>
+            <div>
+                <h2 class="text-2xl font-bold text-brand-dark">Auto-Percepción</h2>
+                <p class="text-sm text-gray-500">Escala del 1 (Muy en desacuerdo) al 5 (Muy de acuerdo)</p>
             </div>
-            
-        </form>
-    </main>
+        </div>
+        <div id="likert-container" class="space-y-8"></div>
+      </section>
 
-    <script>
-        // === CONFIGURACIÓN ===
-        // !!! DEBE REEMPLAZAR ESTA URL CON LA QUE OBTIENE DEL DESPLIEGUE DE GOOGLE APPS SCRIPT !!!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS-1wyI54Mqw6sYw6YPqHPnsb3R4SzuohxcK5uSIlTKFo1dwkw66Nu5OC0QRsUdGMe/exec'; 
-        // Generador de ID único temporal (para el registro en la hoja de cálculo)
-        const generateUniqueId = () => 'user_' + Math.random().toString(36).substring(2, 9) + Date.now();
+      <section id="section-3" class="test-section">
+        <div class="flex items-center mb-8">
+            <div class="w-10 h-10 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-lg mr-4">3</div>
+            <h2 class="text-2xl font-bold text-brand-dark">Juicio Situacional (SJT)</h2>
+        </div>
+        <div id="sjt-container" class="space-y-8"></div>
+      </section>
+
+      <section id="section-4" class="test-section">
+        <div class="flex items-center mb-8">
+            <div class="w-10 h-10 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-lg mr-4">4</div>
+            <h2 class="text-2xl font-bold text-brand-dark">Pensamiento Lógico</h2>
+        </div>
+        <div id="logic-container" class="space-y-8 mb-8"></div>
+
+        <div id="loading-indicator" class="hidden">
+          <div class="flex flex-col items-center justify-center p-8 bg-brand-bg/30 rounded-xl border border-brand-tan">
+            <svg class="animate-spin h-10 w-10 text-brand-cyan mb-4" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-lg text-brand-indigo font-bold">Procesando respuestas...</span>
+            <p class="text-sm text-gray-600">Por favor espera un momento.</p>
+          </div>
+        </div>
+
+        <div id="error-message" class="mt-4 p-4 bg-red-50 text-red-700 border-l-4 border-red-500 rounded-lg hidden text-left shadow-sm">
+          <p class="font-bold">Error de conexión</p>
+          <p class="text-sm">Hubo un error al intentar guardar los datos. Por favor revisa tu conexión e inténtalo de nuevo.</p>
+        </div>
+      </section>
+
+      <section id="section-5" class="test-section">
+        <div id="results-container" class="mt-4 p-8 bg-gradient-to-br from-brand-indigo to-blue-900 text-white rounded-2xl shadow-xl text-center">
+          <div class="mb-4 inline-block p-3 bg-white/10 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-brand-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-3xl font-extrabold mb-3">¡Evaluación Completada!</h3>
+          <p id="mensaje-final" class="mb-8 text-blue-100 text-lg leading-relaxed">Analizando tus fortalezas...</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h4 class="font-bold text-xl mb-3 text-brand-cyan uppercase tracking-wider text-sm">Top Competencias</h4>
+              <ol id="top-competencias" class="list-decimal list-inside text-white font-medium space-y-2"></ol>
+            </div>
+            <div class="bg-white p-6 rounded-xl text-brand-indigo shadow-lg transform md:-rotate-1">
+              <h4 class="font-bold text-sm uppercase tracking-wider text-gray-500 mb-1">Puntaje Total</h4>
+              <p id="puntaje-total" class="text-5xl font-extrabold text-brand-indigo"></p>
+              <p class="text-sm mt-2 text-brand-cyan font-semibold">Puntos acumulados</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="navigation-controls" class="flex justify-between mt-10 pt-6 border-t border-gray-100">
+        <button type="button" id="prev-btn" class="nav-btn bg-white border border-gray-300 text-gray-600 py-3 px-8 rounded-xl font-semibold hover:bg-gray-50 hover:text-brand-indigo hidden">
+            ← Anterior
+        </button>
+        <button type="button" id="next-btn" class="nav-btn bg-brand-indigo text-white py-3 px-10 rounded-xl font-bold hover:bg-blue-900 shadow-lg hover:shadow-xl ml-auto transition-transform transform hover:-translate-y-0.5">
+            Siguiente →
+        </button>
+        <button type="button" id="submit-btn" class="nav-btn bg-brand-cyan text-white py-3 px-10 rounded-xl font-bold hover:bg-teal-600 shadow-lg hover:shadow-xl hidden ml-auto transition-transform transform hover:-translate-y-0.5">
+            Finalizar Test
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <footer class="fixed bottom-2 w-full text-center text-xs text-brand-indigo/50 pointer-events-none">
+    Powered by Disruptive Talent Logic
+  </footer>
+
+  <script>
+    // URL ACTUALIZADA
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyS-1wyI54Mqw6sYw6YPqHPnsb3R4SzuohxcK5uSIlTKFo1dwkw66Nu5OC0QRsUdGMe/exec"; 
+
+    // ======= Ítems (Lógica Original Intacta) =======
+    const LIKERT_ITEMS = [
+      { categoria: 'Orientación a Resultados', id: 'or', texto: 'Cuando un proyecto se retrasa, me enfoco inmediatamente en acciones correctivas para cumplir el objetivo.' },
+      { categoria: 'Atención al Detalle',     id: 'ad', texto: 'Revisar meticulosamente mi trabajo en busca de errores menores es esencial en mi proceso.' },
+      { categoria: 'Autodesarrollo',           id: 'au', texto: 'Busco activamente cómo aprender una nueva tecnología esencial, aunque no tenga tiempo asignado.' },
+      { categoria: 'Colaboración',             id: 'co', texto: 'En conflictos de equipo, priorizo la armonía y un punto medio que satisfaga a todos.' },
+      { categoria: 'Liderazgo Informal',       id: 'li', texto: 'Si el líder está ausente o pasivo, tomo iniciativa para agenda, participación y decisiones.' }
+    ];
+
+    const SJT_ITEMS = [
+      {
+        categoria: 'Flexibilidad y Adaptación', id: 'fa', mode: 'BEST',
+        stem: 'Un requisito clave se anula a mitad del sprint (impacta 50% del trabajo). ¿Qué haces primero?',
+        opciones: { a: 'Detener y analizar impacto, proponiendo un plan de ajuste.', b: 'Seguir con lo que no se afectó.', c: 'Expresar frustración y pedir al gestor que resuelva.' },
+        correct: 'a'
+      },
+      {
+        categoria: 'Gestión del Estrés', id: 'ge', mode: 'LEAST',
+        stem: 'Descubres un error crítico horas antes del release. ¿Cuál es la MENOS efectiva?',
+        opciones: { a: 'Mantener la calma y evaluar causa/impacto.', b: 'Comunicar en pánico a todo el equipo y stakeholders.', c: 'Priorizar solución rápida sobre perfección.' },
+        correct: 'b'
+      },
+      {
+        categoria: 'Innovación', id: 'in', mode: 'BEST',
+        stem: 'Proceso tedioso consume 5h/semana; tienes idea para automatizar. ¿Qué haces primero?',
+        opciones: { a: 'Construir un prototipo funcional con tiempo personal.', b: 'Pedir de inmediato recursos del proyecto actual.', c: 'Esperar a que te indiquen buscar mejora.' },
+        correct: 'a'
+      },
+      {
+        categoria: 'Comunicación Efectiva', id: 'ce', mode: 'BEST',
+        stem: 'Debes explicar un sistema complejo a un cliente no técnico en 10 minutos. ¿Enfoque principal?',
+        opciones: { a: 'Analogías simples y beneficios para el cliente.', b: 'Vocabulario técnico preciso para exactitud.', c: 'Entregar un documento técnico detallado.' },
+        correct: 'a'
+      }
+    ];
+
+    const LOGIC_ITEMS = [
+      { categoria: 'Pensamiento Crítico', id: 'pc1', stem: 'Secuencia: 3, 5, 9, 15, 23, __ ', opciones: ['34','32','33','31'], correct: '33' },
+      { categoria: 'Pensamiento Crítico', id: 'pc2', stem: 'Secuencia: 2, 6, 12, 20, 30, __ ', opciones: ['40','41','42','44'], correct: '42' },
+      { categoria: 'Pensamiento Crítico', id: 'pc3', stem: 'Operador definido: a ◼ b = a² + b. ¿Cuál es el resultado de 5 ◼ 3?', opciones: ['22','23','28','35'], correct: '28' },
+      { categoria: 'Pensamiento Crítico', id: 'pc4', stem: 'Si x es múltiplo de 4 y y es impar, ¿qué expresión es SIEMPRE par?', opciones: ['x + y','x × y','x − y','x^y'], correct: 'x × y' }
+    ];
+
+    // ======= Render UI Mejorado =======
+    const likertContainer = document.getElementById('likert-container');
+    const sjtContainer    = document.getElementById('sjt-container');
+    const logicContainer  = document.getElementById('logic-container');
+
+    function renderLikert(){
+      LIKERT_ITEMS.forEach((q, idx) => {
+        const el = document.createElement('div'); el.className = 'bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-brand-tan transition-colors';
+        el.innerHTML = `
+          <p class="font-semibold text-lg mb-4 text-brand-indigo">${idx+1}. ${q.texto}</p>
+          <div class="flex flex-col md:flex-row items-center justify-between gap-4 mt-4">
+            <span class="text-xs font-bold text-gray-400 uppercase hidden md:block">Desacuerdo</span>
+            <div class="flex gap-3 md:gap-6 w-full justify-between md:justify-center">
+              ${[1,2,3,4,5].map(v => `
+                <label class="cursor-pointer group relative">
+                    <input type="radio" name="likert_${q.id}" value="${v}" required class="peer sr-only">
+                    <div class="likert-circle w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center text-gray-500 font-bold text-lg group-hover:border-brand-cyan group-hover:text-brand-cyan">
+                        ${v}
+                    </div>
+                </label>
+              `).join('')}
+            </div>
+            <span class="text-xs font-bold text-gray-400 uppercase hidden md:block">De acuerdo</span>
+            <div class="flex justify-between w-full md:hidden text-xs text-gray-400 font-bold uppercase mt-1">
+                <span>Desacuerdo</span><span>De acuerdo</span>
+            </div>
+          </div>`;
+        likertContainer.appendChild(el);
+      });
+    }
+
+    function renderSJT(){
+      SJT_ITEMS.forEach((q, idx) => {
+        const el = document.createElement('div'); el.className = 'mb-8';
         
-        let currentSection = 1;
-        const totalSections = 4; // Secciones de contenido: Datos, DISC, SJT, Lógica
-        const sections = document.querySelectorAll('.test-section');
+        const modeBadge = q.mode === 'BEST' 
+            ? '<span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded mb-2">Elige la MEJOR</span>' 
+            : '<span class="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded mb-2">Elige la MENOS efectiva</span>';
 
-        const form = document.getElementById('psychometric-test-form');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const submitBtn = document.getElementById('submit-btn');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const resultsContainer = document.getElementById('results-container');
-        const errorMessage = document.getElementById('error-message');
+        const opts = Object.entries(q.opciones).map(([k,t]) => `
+          <label class="block cursor-pointer group mb-3">
+            <input type="radio" name="sjt_${q.id}" value="${k}" required class="peer sr-only">
+            <div class="option-card p-4 rounded-xl border-2 border-gray-200 bg-white transition-all text-gray-700 flex items-start">
+                <span class="w-6 h-6 rounded-full border border-gray-300 flex-shrink-0 mr-3 flex items-center justify-center mt-0.5 peer-checked:bg-brand-indigo peer-checked:border-brand-indigo">
+                    <div class="w-2 h-2 rounded-full bg-white"></div>
+                </span>
+                <span>${t}</span>
+            </div>
+          </label>`).join('');
         
-        const userId = generateUniqueId(); // ID de la sesión/usuario
+        el.innerHTML = `
+          <div class="p-6 bg-white rounded-xl shadow-sm border border-brand-tan">
+            ${modeBadge}
+            <p class="font-bold text-lg mb-4 text-brand-dark">${idx+1}. ${q.stem}</p>
+            <div class="space-y-2">${opts}</div>
+          </div>`;
+        sjtContainer.appendChild(el);
+      });
+    }
 
-        // === FUNCIONES DE NAVEGACIÓN Y VALIDACIÓN ===
-
-        /** Muestra la sección del test actual. */
-        function showSection(sectionIndex) {
-            sections.forEach(section => section.style.display = 'none');
-            const targetSection = document.getElementById(`section-${sectionIndex}`);
-            if (targetSection) {
-                targetSection.style.display = 'block';
-            }
-            
-            // Lógica de botones
-            // 'Anterior' se oculta en la primera sección de contenido (Sección 1) y en la pantalla final.
-            prevBtn.classList.toggle('hidden', sectionIndex === 1 || sectionIndex > totalSections);
-            // 'Siguiente' se oculta en la última sección de contenido (Sección 4) y en la pantalla final.
-            nextBtn.classList.toggle('hidden', sectionIndex === totalSections || sectionIndex > totalSections);
-            // 'Finalizar Test' solo se muestra en la última sección de contenido (Sección 4).
-            submitBtn.classList.toggle('hidden', sectionIndex !== totalSections);
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        /** Valida que todas las preguntas de la sección actual estén respondidas. */
-        function validateSection(sectionIndex) {
-            const section = document.getElementById(`section-${sectionIndex}`);
-            
-            // Validación específica para la Sección 1 (Datos de Contacto)
-            if (sectionIndex === 1) {
-                const nameInput = document.getElementById('user-name');
-                const emailInput = document.getElementById('user-email');
-                if (!nameInput.value.trim() || !emailInput.value.trim()) {
-                    return false;
-                }
-                return true;
-            }
-
-            // Validación específica para la Sección 2 (DISC)
-            if (sectionIndex === 2) {
-                const mejorGroups = ['b1-mejor', 'b2-mejor'];
-                const menosGroups = ['b1-menos', 'b2-menos'];
-
-                for (const group of mejorGroups) {
-                    if (!document.querySelector(`input[name="${group}"]:checked`)) {
-                        return false;
-                    }
-                }
-                 for (const group of menosGroups) {
-                    if (!document.querySelector(`input[name="${group}"]:checked`)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            // Validación general para Secciones 3 y 4 (SJT y Lógica)
-            const requiredInputs = section.querySelectorAll('input[type="radio"][required]');
-            const uniqueNames = new Set();
-            requiredInputs.forEach(input => uniqueNames.add(input.name));
-
-            for (const name of uniqueNames) {
-                if (!document.querySelector(`input[name="${name}"]:checked`)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /** Manejador del botón "Siguiente" */
-        nextBtn.addEventListener('click', () => {
-            if (validateSection(currentSection)) {
-                currentSection++;
-                showSection(currentSection);
-            } else {
-                displayMessage('Por favor, responde todas las preguntas antes de avanzar.', 'warning');
-            }
-        });
-
-        /** Manejador del botón "Anterior" */
-        prevBtn.addEventListener('click', () => {
-            if (currentSection > 1) {
-                currentSection--;
-                showSection(currentSection);
-            }
-        });
+    function renderLogic(){
+      LOGIC_ITEMS.forEach((q, idx) => {
+        const el = document.createElement('div'); el.className = 'mb-6';
+        const opts = q.opciones.map(opt => `
+          <label class="cursor-pointer group">
+            <input type="radio" name="logic_${q.id}" value="${opt}" required class="peer sr-only">
+             <div class="option-card p-3 rounded-lg border-2 border-gray-200 bg-white transition-all text-center hover:shadow-md">
+                <span class="font-bold text-gray-700 peer-checked:text-brand-indigo">${opt}</span>
+            </div>
+          </label>`).join('');
         
-        // === LÓGICA DE PUNTUACIÓN Y ENVÍO ===
+        el.innerHTML = `
+          <div class="p-6 bg-gray-50 rounded-xl border border-gray-200">
+            <p class="font-bold text-lg mb-4 text-brand-dark">${idx+1}. ${q.stem}</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${opts}</div>
+          </div>`;
+        logicContainer.appendChild(el);
+      });
+    }
+
+    renderLikert(); renderSJT(); renderLogic();
+
+    // ======= Navegación =======
+    const sections  = [...document.querySelectorAll('.test-section')];
+    let current = 0;
+    const prevBtn   = document.getElementById('prev-btn');
+    const nextBtn   = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // ======= Temporizador (Lógica Original) =======
+    const SECTION_TIMERS = { 2: 90, 3: 120, 4: 60 }; 
+    let timerId = null;
+    let remaining = 0;
+
+    function clearSectionTimer(){
+      if (timerId) { clearInterval(timerId); timerId = null; }
+    }
+    function updateTimerUI(secs){
+      const wrap = document.getElementById('timer');
+      const text = document.getElementById('timer-text');
+      const bar  = document.getElementById('timer-bar');
+      if (secs == null) { wrap.classList.add('hidden'); return; }
+      wrap.classList.remove('hidden');
+      const m = Math.floor(secs/60);
+      const s = String(secs%60).padStart(2,'0');
+      text.textContent = `${m}:${s}`;
+      const visualIndex = current + 1;
+      const total = SECTION_TIMERS[visualIndex] || 1;
+      // Invertido visualmente para UX (barra decrece)
+      bar.style.width = `${(secs / total) * 100}%`; 
+      // Cambio de color si queda poco tiempo
+      if(secs < 15) { bar.classList.remove('bg-brand-cyan'); bar.classList.add('bg-red-500'); }
+      else { bar.classList.add('bg-brand-cyan'); bar.classList.remove('bg-red-500'); }
+    }
+    function startSectionTimer(sectionIndex){
+      clearSectionTimer();
+      const visualIndex = sectionIndex + 1; 
+      const secs = SECTION_TIMERS[visualIndex];
+      if (!secs) { updateTimerUI(null); return; } 
+      remaining = secs;
+      updateTimerUI(remaining);
+      timerId = setInterval(() => {
+        remaining--;
+        updateTimerUI(remaining);
+        if (remaining <= 0) {
+          clearSectionTimer();
+          if (sectionIndex < sections.length - 2) {
+            current++; showSection(current);        
+          } else if (sectionIndex === sections.length - 2) {
+            onSubmit();                            
+          } else {
+            updateTimerUI(null);                    
+          }
+        }
+      }, 1000);
+    }
+
+    function showSection(i){
+      // Scroll to top suave
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      sections.forEach((s, idx) => {
+          if(idx === i) s.classList.add('active');
+          else s.classList.remove('active');
+      });
+      
+      prevBtn.classList.toggle('hidden', i === 0);
+      nextBtn.classList.toggle('hidden', i >= sections.length - 2);
+      submitBtn.classList.toggle('hidden', i < sections.length - 2);
+
+      const nav = document.getElementById('navigation-controls');
+      if (i === sections.length - 1) {
+        nav.classList.add('hidden');
+      } else {
+        nav.classList.remove('hidden');
+      }
+
+      startSectionTimer(i);
+    }
+
+    prevBtn.addEventListener('click', () => { if (current > 0) { current--; showSection(current); } });
+    nextBtn.addEventListener('click', () => { if (validateSection(current)) { current++; showSection(current); } });
+    submitBtn.addEventListener('click', onSubmit);
+
+    function validateSection(i){
+      const sec = sections[i];
+      const required = sec.querySelectorAll('input[required]');
+      for (const input of required) {
+        const name = input.name;
+        if (input.type === 'radio') {
+          const group = sec.querySelectorAll(`input[name="${name}"]`);
+          if (![...group].some(r => r.checked)) { alert('Por favor, responde todas las preguntas antes de continuar.'); return false; }
+        } else if (!input.value) { alert('Por favor, completa los campos requeridos.'); return false; }
+      }
+      return true;
+    }
+
+    // ======= Scoring =======
+    function computeScores(formData){
+      const categories = new Set([
+        ...LIKERT_ITEMS.map(i=>i.categoria),
+        ...SJT_ITEMS.map(i=>i.categoria),
+        ...LOGIC_ITEMS.map(i=>i.categoria),
+      ]);
+      const scores = {}; categories.forEach(c => scores[c] = 0);
+
+      LIKERT_ITEMS.forEach(q => { const v = Number(formData.get(`likert_${q.id}`) || 0); scores[q.categoria] += v; });
+      SJT_ITEMS.forEach(q => { const v = formData.get(`sjt_${q.id}`); if (v && v === q.correct) scores[q.categoria] += 5; });
+      LOGIC_ITEMS.forEach(q => { const v = formData.get(`logic_${q.id}`); if (v && v === q.correct) scores[q.categoria] += 5; });
+
+      const total = Object.values(scores).reduce((a,b)=>a+b,0);
+      return { scores, total };
+    }
+
+    function renderResults(scores, total){
+      const list = document.getElementById('top-competencias');
+      list.innerHTML = '';
+      const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+      const top3 = sorted.slice(0,3);
+      top3.forEach(([cat, val]) => {
+        const li = document.createElement('li'); li.textContent = `${cat}`; list.appendChild(li);
+      });
+      document.getElementById('puntaje-total').textContent = total;
+
+      const mensajeEl = document.getElementById('mensaje-final');
+      if (mensajeEl) {
+        const [top1] = [sorted[0]?.[0]];
+        if (top1) mensajeEl.innerHTML = `Tu perfil destaca principalmente en <strong>${top1}</strong>.`;
+      }
+    }
+
+    // ======= Submit =======
+    async function onSubmit(){
+      if (!validateSection(current)) return;
+      
+      // Mostrar loading estado inmediatamente
+      const form = document.getElementById('psychometric-test-form');
+      // Deshabilitar navegación
+      document.getElementById('navigation-controls').classList.add('opacity-50', 'pointer-events-none');
+      
+      const formData = new FormData(form);
+      const { scores, total } = computeScores(formData);
+
+      document.getElementById('loading-indicator').classList.remove('hidden');
+      document.getElementById('error-message').classList.add('hidden');
+
+      const payload = {
+        timestamp: new Date().toISOString(),
+        nombre: formData.get('nombre') || '',
+        correo: formData.get('correo') || '',
+        telefono: formData.get('telefono') || '',
+        vacante: formData.get('vacante') || '',
+        total,
+        scores,
+        respuestas: Object.fromEntries([...formData.entries()]),
+      };
+
+      // Preparar UI final
+      renderResults(scores, total);
+
+      try {
+        const body = new URLSearchParams();
+        body.append('action','saveResults');
+        body.append('payload', JSON.stringify(payload));
         
-        /** Muestra un mensaje temporal (como un "alert" pero en la UI). */
-        function displayMessage(message, type = 'info') {
-            const messageBox = document.createElement('div');
-            let bgColor = 'bg-blue-100 border-blue-500 text-blue-700';
-            if (type === 'warning') {
-                 bgColor = 'bg-yellow-100 border-yellow-500 text-yellow-700';
-            }
-            messageBox.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg border-l-4 ${bgColor} transition-opacity duration-300`;
-            messageBox.textContent = message;
-            document.body.appendChild(messageBox);
-            
-            setTimeout(() => {
-                messageBox.classList.add('opacity-0');
-                messageBox.addEventListener('transitionend', () => messageBox.remove());
-            }, 3000);
-        }
-
-        /** Calcula todos los puntajes del test y recoge datos del usuario. */
-        function calculateScores() {
-            let scoreD = 0; // Determinación / Orientación a Resultados
-            let scoreC = 0; // Atención al Detalle / Excelencia
-            let scoreSJT = 0; // Mejora Continua / Determinación Situacional
-            let scoreLogic = 0; // Aptitud Lógica
-
-            // Datos del Usuario
-            const userName = document.getElementById('user-name').value.trim();
-            const userEmail = document.getElementById('user-email').value.trim();
-
-
-            // II. SECCIÓN DISC SIMPLIFICADO (D vs C)
-            // Lógica: Mejor (+1) / Menos (-1).
-            const betterChoices = form.querySelectorAll('input[name$="-mejor"]:checked');
-            const lesserChoices = form.querySelectorAll('input[name$="-menos"]:checked');
-
-            betterChoices.forEach(input => {
-                if (input.value === 'D') scoreD++;
-                if (input.value === 'C') scoreC++;
-            });
-            
-            lesserChoices.forEach(input => {
-                if (input.value === 'D') scoreD--;
-                if (input.value === 'C') scoreC--;
-            });
-
-            // III. SECCIÓN JUICIO SITUACIONAL (SJT)
-            // Mide Mejora Continua (sjt1) y Determinación Situacional (sjt2).
-            const sjt1Value = parseInt(form.querySelector('input[name="sjt1"]:checked')?.value || 0);
-            const sjt2Value = parseInt(form.querySelector('input[name="sjt2"]:checked')?.value || 0);
-            scoreSJT = sjt1Value + sjt2Value; // Puntaje total SJT
-
-            // IV. SECCIÓN CAPACIDAD LÓGICA
-            // Respuestas correctas: logic1 = b (243), logic2 = c (Edificio)
-            if (form.querySelector('input[name="logic1"]:checked')?.value === 'b') scoreLogic++;
-            if (form.querySelector('input[name="logic2"]:checked')?.value === 'c') scoreLogic++;
-
-            // Determinar Perfil Dominante
-            let dominantProfile = 'Indefinido';
-            if (scoreD > scoreC) {
-                dominantProfile = 'Resultados/Determinación';
-            } else if (scoreC > scoreD) {
-                dominantProfile = 'Detalle/Excelencia';
-            } else {
-                dominantProfile = 'Balance D/C';
-            }
-            
-            return { userName, userEmail, scoreD, scoreC, scoreSJT, scoreLogic, dominantProfile };
-        }
-
-        /** Envía los datos al Google Apps Script (el "backend"). */
-        async function sendResults(results) {
-            loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            
-            // Payload para el Apps Script
-            const payload = {
-                userId: userId,
-                userName: results.userName,
-                userEmail: results.userEmail,
-                scoreD: results.scoreD,
-                scoreC: results.scoreC,
-                scoreSJT: results.scoreSJT,
-                scoreLogic: results.scoreLogic,
-                dominantProfile: results.dominantProfile
-            };
-
-            try {
-                // Utilizando Fetch API para enviar el POST request
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Necesario para evitar CORS en Apps Script sin configurar cabeceras
-                    cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                // Muestra los resultados finales en la UI (asumimos éxito si no hay error de red)
-                displayFinalResults(results);
-
-            } catch (error) {
-                console.error('Error al enviar los datos:', error);
-                loadingIndicator.classList.add('hidden');
-                errorMessage.classList.remove('hidden');
-            }
-        }
-
-        /** Muestra el resumen de resultados al usuario. */
-        function displayFinalResults(results) {
-            loadingIndicator.classList.add('hidden');
-            resultsContainer.classList.remove('hidden');
-
-            // Actualizar resumen de resultados
-            document.getElementById('result-dominant-profile').textContent = results.dominantProfile;
-            document.getElementById('result-logic').textContent = `${results.scoreLogic} / 2`;
-            
-            // Mensaje de advertencia si la URL no fue reemplazada
-            if (SCRIPT_URL === 'TU_APPS_SCRIPT_URL_AQUI') {
-                 errorMessage.textContent = 'ERROR: La URL del Apps Script no fue reemplazada. Los datos no se guardaron.';
-                 errorMessage.classList.remove('hidden');
-                 resultsContainer.classList.add('hidden');
-            }
-        }
+        const res = await fetch(SCRIPT_URL, { method: 'POST', body });
+        // Intentar parsear aunque no es estricto para el éxito visual
+        try { await res.json(); } catch(_){}
         
-        /** Manejador del botón "Finalizar Test" */
-        submitBtn.addEventListener('click', () => {
-            if (validateSection(currentSection)) {
-                // 1. Ocultar navegación y mostrar sección final
-                document.getElementById('navigation-controls').classList.add('hidden');
-                currentSection++;
-                showSection(currentSection);
+        if (!res.ok) throw new Error('Error en red');
+        
+      } catch (e) {
+        // En caso de error, mostramos mensaje pero dejamos ver resultados locales
+        console.error(e);
+        document.getElementById('error-message').classList.remove('hidden');
+      } finally {
+        document.getElementById('loading-indicator').classList.add('hidden');
+        clearSectionTimer();             
+        current = sections.length - 1;   
+        showSection(current);
+      }
+    }
 
-                // 2. Calcular scores
-                const scores = calculateScores();
-                
-                // 3. Enviar a Google Sheets
-                sendResults(scores);
-                
-            } else {
-                displayMessage('Por favor, responde todas las preguntas antes de finalizar.', 'warning');
-            }
-        });
-
-        // Inicialización
-        showSection(currentSection);
-    </script>
+    // init
+    showSection(current);
+  </script>
 </body>
 </html>
